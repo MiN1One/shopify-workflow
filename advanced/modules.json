@@ -1,0 +1,4 @@
+{
+  "home": "./src/pages/home",
+  "collections": "./src/pages/collections"
+}
