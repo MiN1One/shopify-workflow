@@ -11,6 +11,7 @@ module.exports = (_, options) => {
   return {
     entry: JSON.parse(fs.readFileSync('./modules.json')),
     watch: isDevelopment,
+    stats: 'minimal',
     output: {
       path: path.resolve(__dirname, './assets'),
       filename: '[name].min.js'
