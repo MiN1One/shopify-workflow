@@ -1,0 +1,7 @@
+{% section 'main-product.liquid' %}
+<form action="/cart/add" method="post" id="product-form- {{ product.id }}">
+    <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+    <div>
+      <button type="submit" name="add">Add to cart</button>
+    </div>
+  </form>
