@@ -7,8 +7,6 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-const ERROR_ASSET_URL = 'Selected theme does not have asset URL for loading lazy asset files';
-
 const configYmlContent = yml.load(fs.readFileSync('./config.yml', 'utf-8'));
 
 const themesList = Object.keys(configYmlContent || {});
@@ -30,13 +28,7 @@ const runProcesses = () => {
         return runProcesses();
       }
       const themeEnv = themesList[themeId] || firstAvailableTheme;
-      let asset_url = configYmlContent[themeEnv]?.asset_url;
-      if (!asset_url) {
-        throw new Error(ERROR_ASSET_URL);
-      }
-      if (!asset_url.endsWith('/')) {
-        asset_url += '/';
-      }
+      
       readline.question('Open theme (Y/N)?: ', async (answ) => {
         try {
           const commands = [
@@ -46,7 +38,7 @@ const runProcesses = () => {
               prefixColor: '#2ecc71'
             },
             {
-              command: `cross-env ASSET_URL=${asset_url} webpack --mode=development`,
+              command: `cross-env webpack --mode=development`,
               name: 'Webpack',
               prefixColor: '#3498db'
             }

@@ -1,5 +1,7 @@
 const concurrently = require('concurrently');
 const { promisify } = require('util');
+const yml = require('js-yaml');
+const fs = require('fs');
 
 const execute = promisify(require('child_process').exec);
 
@@ -7,6 +9,16 @@ const readline = require('readline').createInterface({
   input: process.stdin,
   output: process.stdout
 });
+
+const configYmlContent = yml.load(fs.readFileSync('./config.yml', 'utf-8'));
+const themesList = Object.keys(configYmlContent || {});
+const themesListLog = themesList.reduce(
+  (prev, themeName, index, self) => (
+    prev + `# ${index} - ${themeName}${index !== self.length - 1 ? '\n' : ''}`
+  ), ' --- Themes List ---\n'
+);
+
+console.log(themesListLog);
 
 const executeShellCommand = async (command) => {
   try {
@@ -43,14 +55,16 @@ const deploy = async (themeEnv) => {
 
 const getThemeEnv = () => {
   readline.question(
-    '\x1b[31mEnter theme name to deploy: \x1b[31m', 
-    async (themeEnv) => {
-      if (!themeEnv.trim().length) {
+    '\x1b[31mEnter theme ID to deploy: \x1b[31m', 
+    async (themeId) => {
+      themeId = parseInt(themeId);
+      const themeEnv = themesList[themeId];
+      if (!themeEnv || isNaN(themeId)) {
         return getThemeEnv();
       }
       console.log(`\x1b[32m- Building source files\x1b[32m`);
-      await executeShellCommand('yarn build');
-      await deploy(themeEnv);
+      await executeShellCommand(`cross-env webpack --mode=production`);
+      deploy(themeEnv);
     }
   );
 };
